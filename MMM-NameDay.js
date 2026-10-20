@@ -53,7 +53,7 @@ Module.register("MMM-NameDay", {
     },
 
     getURL: function () {
-        const baseUrl = "https://nameday.abalin.net/";
+        const baseUrl = "https://nameday.abalin.net/api/V2/";
         let url;
         if (this.config.mode === "today" || this.config.mode === "tomorrow" || this.config.mode === "yesterday") {
             if (this.config.country !== "" && Array.isArray(this.config.country) === false) {
@@ -93,11 +93,12 @@ Module.register("MMM-NameDay", {
         const dataRequest = new XMLHttpRequest();
         const url = this.getURL();
         Log.info("Fetched URL: " + url);
-        dataRequest.open("POST", url, true);
+        dataRequest.open("GET", url, true);
         dataRequest.onreadystatechange = function () {
             if (this.readyState === 4) {
                 if (this.status >= 200 && this.status < 400) {
                     self.names = JSON.parse(this.response);
+                    if (self.names.data && self.names.data.namedays === undefined && !Array.isArray(self.names.data)) { self.names.data = { namedays: self.names.data }; }
                     self.loaded = true;
                     self.updateDom();
                 } else {
